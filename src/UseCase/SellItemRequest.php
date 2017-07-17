@@ -18,11 +18,9 @@ class SellItemRequest
      */
     private $productName;
 
-    /**
-     * @param int $quantity
-     */
-    public function setQuantity(int $quantity) : void
+    public function __construct(string $productName, int $quantity)
     {
+        $this->productName = $productName;
         $this->quantity = $quantity;
     }
 
@@ -32,14 +30,6 @@ class SellItemRequest
     public function getQuantity() : int
     {
         return $this->quantity;
-    }
-
-    /**
-     * @param string $productName
-     */
-    public function setProductName(string $productName) : void
-    {
-        $this->productName = $productName;
     }
 
     /**

@@ -67,13 +67,9 @@ class OrderCreationUseCaseTest extends TestCase
      */
     public function sellMultipleItems() : void
     {
-        $saladRequest = new SellItemRequest();
-        $saladRequest->setProductName("salad");
-        $saladRequest->setQuantity(2);
+        $saladRequest = new SellItemRequest("salad", 2);
 
-        $tomatoRequest = new SellItemRequest();
-        $tomatoRequest->setProductName("tomato");
-        $tomatoRequest->setQuantity(3);
+        $tomatoRequest = new SellItemRequest("tomato", 3);
 
         $request = new SellItemsRequest();
         $request->setRequests(...[$saladRequest, $tomatoRequest]);
@@ -107,9 +103,7 @@ class OrderCreationUseCaseTest extends TestCase
     {
         $this->expectException(UnknownProductException::class);
         $request = new SellItemsRequest();
-        $unknownProductRequest = new SellItemRequest();
-        $unknownProductRequest->setQuantity(1);
-        $unknownProductRequest->setProductName('unknown product');
+        $unknownProductRequest = new SellItemRequest('unknown product', 1);
         $request->setRequests(...[$unknownProductRequest]);
 
         $this->useCase->run($request);
