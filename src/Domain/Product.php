@@ -23,6 +23,10 @@ class Product
      */
     private $category;
 
+    private function __construct()
+    {
+    }
+
     /**
      * @return string
      */
@@ -34,7 +38,7 @@ class Product
     /**
      * @param string $name
      */
-    public function setName(string $name) : void
+    private function setName(string $name) : void
     {
         $this->name = $name;
     }
@@ -50,7 +54,7 @@ class Product
     /**
      * @param float $price
      */
-    public function setPrice(float $price) : void
+    private function setPrice(float $price) : void
     {
         $this->price = $price;
     }
@@ -66,8 +70,20 @@ class Product
     /**
      * @param Category $category
      */
-    public function setCategory(Category $category) : void
+    private function setCategory(Category $category) : void
     {
         $this->category = $category;
     }
+
+    public static function create(string $name, float $price, Category $category): self
+    {
+        $product = new self();
+        $product->setName($name);
+        $product->setPrice($price);
+        $product->setCategory($category);
+
+        return $product;
+    }
+
+
 }

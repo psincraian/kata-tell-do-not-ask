@@ -46,15 +46,8 @@ class OrderCreationUseCaseTest extends TestCase
         $this->food->setName('food');
         $this->food->setTaxPercentage(10.0);
 
-        $product1 = new Product();
-        $product1->setName('salad');
-        $product1->setPrice(3.56);
-        $product1->setCategory($this->food);
-
-        $product2 = new Product();
-        $product2->setName('tomato');
-        $product2->setPrice(4.65);
-        $product2->setCategory($this->food);
+        $product1 = Product::create('salad', 3.56, $this->food);
+        $product2 = Product::create('tomato', 4.65, $this->food);
 
         $products = [$product1, $product2];
 
