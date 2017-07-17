@@ -37,18 +37,16 @@ class OrderShipmentUseCase
     {
         $order = $this->orderRepository->getById($request->getOrderId());
 
-        if ($order->getStatus()->getType() === OrderStatus::CREATED
-            ||$order->getStatus()->getType() === OrderStatus::REJECTED
-        ) {
+        if (!$order->canBeShipped()) {
             throw new OrderCannotBeShippedException();
         }
 
-        if ($order->getStatus()->getType() === OrderStatus::SHIPPED) {
+        if ($order->shipped()) {
             throw new OrderCannotBeShippedTwiceException();
         }
 
         $this->shipmentService->ship($order);
-        $order->setStatus(OrderStatus::shipped());
+        $order->ship();
 
         $this->orderRepository->save($order);
     }

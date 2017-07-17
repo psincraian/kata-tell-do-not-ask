@@ -48,9 +48,8 @@ class OrderShipmentUseCaseTest extends TestCase
      */
     public function shipApprovedOrder() : void
     {
-        $initialOrder = new Order();
-        $initialOrder->setId(1);
-        $initialOrder->setStatus(OrderStatus::approved());
+        $initialOrder = Order::create(1);
+        $initialOrder->approved();
         $this->orderRepository->addOrder($initialOrder);
 
         $request = new OrderShipmentRequest();

@@ -161,7 +161,23 @@ class Order
         $this->id = $id;
     }
 
-    public static function create(int $id, string $currency)
+    public function canBeShipped(): bool
+    {
+        return !($this->getStatus()->getType() === OrderStatus::CREATED
+            ||$this->getStatus()->getType() === OrderStatus::REJECTED);
+    }
+
+    public function shipped(): bool
+    {
+        return $this->getStatus()->getType() === OrderStatus::SHIPPED;
+    }
+
+    public function ship(): void
+    {
+        $this->setStatus(OrderStatus::shipped());
+    }
+
+    public static function create(int $id, string $currency = 'EUR')
     {
         $order = new self();
         $order->setId($id);
