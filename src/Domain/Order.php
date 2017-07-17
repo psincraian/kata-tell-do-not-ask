@@ -38,6 +38,10 @@ class Order
      */
     private $id;
 
+    public function __construct()
+    {
+    }
+
     /**
      * @return float
      */
@@ -94,6 +98,21 @@ class Order
         $this->items[] = $item;
     }
 
+    public function addProductItem(Product $product, int $quantity)
+    {
+        // @todo instantiate OrderItem with required params
+        $orderItem = new OrderItem();
+        $orderItem->setProduct($product);
+        $orderItem->setQuantity($quantity);
+        $this->addItem($orderItem);
+
+        $total = $this->getTotal() + $orderItem->getTaxedAmount();
+        $this->setTotal($total);
+
+        $tax = $this->getTax() + $orderItem->getTax();
+        $this->setTax($tax);
+    }
+
     /**
      * @return float
      */
@@ -140,5 +159,17 @@ class Order
     public function setId(int $id) : void
     {
         $this->id = $id;
+    }
+
+    public static function create(int $id, string $currency)
+    {
+        $order = new self();
+        $order->setId($id);
+        $order->setStatus(OrderStatus::created());
+        $order->setCurrency($currency);
+        $order->setTotal(0.0);
+        $order->setTax(0.0);
+
+        return $order;
     }
 }

@@ -7,6 +7,7 @@ use Archel\TellDontAsk\Domain\OrderItem;
 use Archel\TellDontAsk\Domain\OrderStatus;
 use Archel\TellDontAsk\Repository\OrderRepository;
 use Archel\TellDontAsk\Repository\ProductCatalog;
+use Archel\TellDontAsk\Service\OrderIdGenerator;
 
 /**
  * Class OrderCreationUseCase
@@ -26,23 +27,26 @@ class OrderCreationUseCase
     private $productCatalog;
 
     /**
+     * @var  OrderIdGenerator
+     */
+    private $orderIdGenerator;
+
+    /**
      * OrderCreationUseCase constructor.
      * @param OrderRepository $orderRepository
      * @param ProductCatalog $productCatalog
      */
-    public function __construct(OrderRepository $orderRepository, ProductCatalog $productCatalog)
+    public function __construct(OrderRepository $orderRepository, ProductCatalog $productCatalog, OrderIdGenerator $orderIdGenerator)
     {
         $this->orderRepository = $orderRepository;
         $this->productCatalog = $productCatalog;
+        $this->orderIdGenerator = $orderIdGenerator;
     }
 
-    public function run(SellItemsRequest $request) : void
+    public function run(SellItemsRequest $request): void
     {
-        $order = new Order();
-        $order->setStatus(OrderStatus::created());
-        $order->setCurrency("EUR");
-        $order->setTotal(0.0);
-        $order->setTax(0.0);
+        $id = $this->orderIdGenerator->nextId();
+        $order = Order::create($id, "EUR");
 
         $itemsRequest = $request->getRequests();
         foreach ($itemsRequest as $itemRequest) {
@@ -50,28 +54,9 @@ class OrderCreationUseCase
 
             if (empty($product)) {
                 throw new UnknownProductException();
-            } else {
-                $unitaryTax = round(
-                    ($product->getPrice() / 100) * $product->getCategory()->getTaxPercentage(),
-                    2
-                );
-                $unitaryTaxedAmount = round($product->getPrice() + $unitaryTax, 2);
-                $taxedAmount = round($unitaryTaxedAmount * $itemRequest->getQuantity(), 2);
-                $taxAmount = round($unitaryTax * $itemRequest->getQuantity(), 2);
-
-                $orderItem = new OrderItem();
-                $orderItem->setProduct($product);
-                $orderItem->setQuantity($itemRequest->getQuantity());
-                $orderItem->setTax($taxAmount);
-                $orderItem->setTaxedAmount($taxedAmount);
-                $order->addItem($orderItem);
-
-                $total = $order->getTotal() + $taxedAmount;
-                $order->setTotal($total);
-
-                $tax = $order->getTax() + $taxAmount;
-                $order->setTax($tax);
             }
+
+            $order->addProductItem($product, $itemRequest->getQuantity());
         }
 
         $this->orderRepository->save($order);

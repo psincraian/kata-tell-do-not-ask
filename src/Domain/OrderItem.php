@@ -8,6 +8,7 @@ namespace Archel\TellDontAsk\Domain;
  */
 class OrderItem
 {
+    const ROUND_PRECISSION = 2;
     /**
      * @var Product
      */
@@ -65,7 +66,7 @@ class OrderItem
      */
     public function getTaxedAmount() : float
     {
-        return $this->taxedAmount;
+        return round($this->product->getUnitaryTaxAmount() * $this->getQuantity(), self::ROUND_PRECISSION);
     }
 
     /**
@@ -81,7 +82,7 @@ class OrderItem
      */
     public function getTax() : float
     {
-        return $this->tax;
+        return round($this->product->getUnitaryTax() * $this->getQuantity(), self::ROUND_PRECISSION);
     }
 
     /**

@@ -5,11 +5,13 @@ namespace Archel\TellDontAskTest\UseCase;
 use Archel\TellDontAsk\Domain\Category;
 use Archel\TellDontAsk\Domain\OrderStatus;
 use Archel\TellDontAsk\Domain\Product;
+use Archel\TellDontAsk\Service\OrderIdGenerator;
 use Archel\TellDontAsk\UseCase\OrderCreationUseCase;
 use Archel\TellDontAsk\UseCase\SellItemRequest;
 use Archel\TellDontAsk\UseCase\SellItemsRequest;
 use Archel\TellDontAsk\UseCase\UnknownProductException;
 use Archel\TellDontAskTest\Doubles\InMemoryProductCatalog;
+use Archel\TellDontAskTest\Doubles\TestOrderIdGenerator;
 use Archel\TellDontAskTest\Doubles\TestOrderRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +41,11 @@ class OrderCreationUseCaseTest extends TestCase
      */
     private $useCase;
 
+    /**
+     * @var OrderIdGenerator
+     */
+    private $orderIdGenerator;
+
     public function setUp()
     {
         $this->orderRepository = new TestOrderRepository();
@@ -52,7 +59,8 @@ class OrderCreationUseCaseTest extends TestCase
         $products = [$product1, $product2];
 
         $this->productCatalog = new InMemoryProductCatalog(...$products);
-        $this->useCase = new OrderCreationUseCase($this->orderRepository, $this->productCatalog);
+        $this->orderIdGenerator = new TestOrderIdGenerator();
+        $this->useCase = new OrderCreationUseCase($this->orderRepository, $this->productCatalog, $this->orderIdGenerator);
     }
 
     /**
@@ -64,6 +72,7 @@ class OrderCreationUseCaseTest extends TestCase
 
         $tomatoRequest = new SellItemRequest("tomato", 3);
 
+        /** @todo create SellItemRequests with requests */
         $request = new SellItemsRequest();
         $request->setRequests(...[$saladRequest, $tomatoRequest]);
 

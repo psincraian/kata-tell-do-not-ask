@@ -8,6 +8,7 @@ namespace Archel\TellDontAsk\Domain;
  */
 class Product
 {
+    const ROUND_PRECISION = 2;
     /**
      * @var string
      */
@@ -65,6 +66,19 @@ class Product
     public function getCategory() : Category
     {
         return $this->category;
+    }
+
+    public function getUnitaryTax(): float
+    {
+        return round(
+            ($this->getPrice() / 100) * $this->getCategory()->getTaxPercentage(),
+            self::ROUND_PRECISION
+        );
+    }
+
+    public function getUnitaryTaxAmount(): float
+    {
+        return round($this->getPrice() + $this->getUnitaryTax(), self::ROUND_PRECISION);
     }
 
     /**
